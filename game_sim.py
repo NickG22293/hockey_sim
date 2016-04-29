@@ -38,24 +38,16 @@ class TeamStats:
         self.playoff_stats = PostSeasonStats()
         self.regular_stats = RegularSeasonStats()
 
-    # Cols as follows:
-    # AvAge, GP, W, L, OL, PTS, PTS%, GF, GA, SRS, SOS
-    # TG/G, PPG, PPO, PP% PPA, PPO, PK%, SHG, SHA, S, S%
-    def fill_team_stats(self, table):
-        # fill the regular season stats
-        self.regular_stats.shots = table[21]
-        self.regular.shotspg = self.shots/82
-        self.regular.shotperc = table[22]
-        self.regular.svperc = table[24]
-        print_team_stats(self.regular_stats)
-
-    def print_team_stats(stats):
+    # Just print out appropriate stats
+    def print_team_stats(self,stats):
         print "Shots: ", stats.shots
         print "Shot %: ", stats.shotperc
         print "Record: ", stats.record
         print "Save %: ", stats.svperc
         print "Shots PG: ", stats.shotspg
-        
+        if stats.__class__ == PostSeasonStats:
+            print "Seed: ", stats.seed
+            print "Playoff GP: ", stats.playoff_gp
 
     # pull down info from stats site using lxml and requests
     def parse_hockey_stats(self, team):
@@ -69,21 +61,31 @@ class TeamStats:
         assert isinstance(stats, object)
         # fill stats vars
         table = iter(stats)
+        assert isinstance(table, object)
         fill_team_stats(table)
+
+    # Cols as follows:
+    # AvAge, GP, W, L, OL, PTS, PTS%, GF, GA, SRS, SOS
+    # TG/G, PPG, PPO, PP% PPA, PPO, PK%, SHG, SHA, S, S%
+    def fill_team_stats(self, table):
+        # fill the regular season stats
+        self.regular_stats.shots = table[21]
+        self.regular.shotspg = self.shots/82
+        self.regular.shotperc = table[22]
+        self.regular.svperc = table[24]
+        print_team_stats(self.regular_stats)
 
 class HockeySim:
     def __init__(self):
-        build_playoff_bracket()
 
     def build_playoff_bracket(self):
         #TODO: build playoff bracket
         url = ""
+        home = TeamStats()
+        home.parse_hockey_stats('WSH')
+        away = TeamStats()
+        away.parse_hockey_stats('PIT')
+        print '\n'
 
-def main():
-    home = TeamStats()
-    home.parse_hockey_stats('WSH')
-    away = TeamStats()
-    away.parse_hockey_stats('PIT')
-    print '\n'
-
-main()
+sim = HockeySim()
+sim.build_playoff_bracket()
