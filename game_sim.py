@@ -7,7 +7,6 @@
 # so optimization will have to be kept in mind.
 
 from lxml import html, etree
-from bs4 import BeautifulSoup
 import requests
 
 # Parent class to hold apropo stats for playoff/regular season
