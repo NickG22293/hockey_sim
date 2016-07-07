@@ -49,6 +49,20 @@ class TeamStats:
             print "Seed: ", stats.seed
             print "Playoff GP: ", stats.playoff_gp
 
+    # Cols as follows:
+    # AvAge, GP, W, L, OL, PTS, PTS%, GF, GA, SRS, SOS
+    # TG/G, PPG, PPO, PP% PPA, PPO, PK%, SHG, SHA, S, S%
+    SHOTS_COL = 21
+    SHOTPERC_COL = 22
+    SVPERC_COL = 24
+    def fill_team_stats(self, table):
+        # fill the regular season stats
+        self.regular_stats.shots = table[self.SHOTS_COL]
+        self.regular.shotspg = self.shots / 82
+        self.regular.shotperc = table[self.SHOTPERC_COL]
+        self.regular.svperc = table[self.SVPERC_COL]
+        self.print_team_stats(self.regular_stats)
+
     # pull down info from stats site using lxml and requests
     def parse_hockey_stats(self, team):
         # build the URL using Team
@@ -62,24 +76,14 @@ class TeamStats:
         # fill stats vars
         table = iter(stats)
         assert isinstance(table, object)
-        fill_team_stats(table)
+        self.fill_team_stats(table)
 
-    # Cols as follows:
-    # AvAge, GP, W, L, OL, PTS, PTS%, GF, GA, SRS, SOS
-    # TG/G, PPG, PPO, PP% PPA, PPO, PK%, SHG, SHA, S, S%
-    def fill_team_stats(self, table):
-        # fill the regular season stats
-        self.regular_stats.shots = table[21]
-        self.regular.shotspg = self.shots/82
-        self.regular.shotperc = table[22]
-        self.regular.svperc = table[24]
-        print_team_stats(self.regular_stats)
 
 class HockeySim:
     def __init__(self):
+        self.winner = ""
 
     def build_playoff_bracket(self):
-        #TODO: build playoff bracket
         url = ""
         home = TeamStats()
         home.parse_hockey_stats('WSH')
